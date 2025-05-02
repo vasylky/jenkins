@@ -14,7 +14,6 @@ pipeline {
 
     tools {
         dotnetsdk 'dotnet'
-        dockerTool 'docker'
     }
 
     stages {
