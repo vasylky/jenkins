@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'mcr.microsoft.com/azure-cli'
+        }
+    }
 
     triggers {
         githubPush()
@@ -21,6 +25,12 @@ pipeline {
     }
 
     stages {
+        stage('Verify az CLI') {
+            steps {
+                sh 'az --version'
+            }
+        }
+
         stage('Checkout SCM') {
             steps {
                 checkout scm
