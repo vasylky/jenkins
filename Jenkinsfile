@@ -89,8 +89,10 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                dir('terraform') {
-                    sh '/opt/homebrew/bin/terraform plan'
+                withCredentials([file(credentialsId: 'tfvars-file', variable: 'TFVARS_FILE')]) {
+                    dir('terraform') {
+                        sh "/opt/homebrew/bin/terraform plan -var-file=$TFVARS_FILE"
+                    }
                 }
             }
         }
@@ -98,11 +100,14 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 input message: "Do you want to apply Terraform changes?"
-                dir('terraform') {
-                    sh '/opt/homebrew/bin/terraform apply -auto-approve'
+                withCredentials([file(credentialsId: 'tfvars-file', variable: 'TFVARS_FILE')]) {
+                    dir('terraform') {
+                        sh "/opt/homebrew/bin/terraform apply -var-file=$TFVARS_FILE -auto-approve"
+                    }
                 }
             }
         }
+
 
 
     }
