@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     triggers {
         githubPush()
     }
@@ -71,7 +71,7 @@ pipeline {
         stage('Login to Azure') {
             steps {
                 sh '''
-                    echo $ARM_CLIENT_SECRET | az login --service-principal \
+                    echo $ARM_CLIENT_SECRET | /opt/homebrew/bin/az login --service-principal \
                       --username $ARM_CLIENT_ID \
                       --password $(< /dev/stdin) \
                       --tenant $ARM_TENANT_ID
@@ -81,20 +81,20 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                sh 'terraform init'
+                sh '/opt/homebrew/bin/terraform init'
             }
         }
 
         stage('Terraform Plan') {
             steps {
-                sh 'terraform plan'
+                sh '/opt/homebrew/bin/terraform plan'
             }
         }
 
         stage('Terraform Apply') {
             steps {
                 input message: "Do you want to apply Terraform changes?"
-                sh 'terraform apply -auto-approve'
+                sh '/opt/homebrew/bin/terraform apply -auto-approve'
             }
         }
     }
