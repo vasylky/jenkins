@@ -37,22 +37,30 @@ pipeline {
             }
         }
 
-        stage('Build and Push Docker') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-conn',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    sh """
-                        docker build -t ${dockerHubUsername}/${dockerImageName}:${BUILD_ID} \\
-                                     -t ${dockerHubUsername}/${dockerImageName}:latest .
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push ${dockerHubUsername}/${dockerImageName}:${BUILD_ID}
-                        docker push ${dockerHubUsername}/${dockerImageName}:latest
-                    """
-                }
-            }
-        }
+stage('Build and Push Docker') {
+  steps {
+    withCredentials([usernamePassword(
+      credentialsId: 'dockerhub-conn',
+      usernameVariable: 'DOCKER_USER',
+      passwordVariable: 'DOCKER_PASS'
+    )]) {
+      sh '''
+        /usr/local/bin/docker build \
+          -t ${dockerHubUsername}/${dockerImageName}:${BUILD_ID} \
+          -t ${dockerHubUsername}/${dockerImageName}:latest .
+
+        echo "$DOCKER_PASS" | /usr/local/bin/docker login \
+          -u "$DOCKER_USER" --password-stdin
+
+        /usr/local/bin/docker push \
+          ${dockerHubUsername}/${dockerImageName}:${BUILD_ID}
+
+        /usr/local/bin/docker push \
+          ${dockerHubUsername}/${dockerImageName}:latest
+      '''
+    }
+  }
+}
+
     }
 }
