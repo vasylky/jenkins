@@ -3,7 +3,7 @@ pipeline {
     triggers {
         githubPush()
     }
-    environmet{
+    environment{
         buildConfiguration = 'Release'
         projectPath = 'SampleWebApiAspNetCore/SampleWebApiAspNetCore.csproj'
     }
