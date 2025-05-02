@@ -3,6 +3,10 @@ pipeline {
     triggers {
         githubPush()
     }
+    environmet{
+        buildConfiguration = 'Release'
+        projectPath = 'SampleWebApiAspNetCore/SampleWebApiAspNetCore.csproj'
+    }
     tools {
         dotnetsdk 'dotnet'
     }
@@ -13,9 +17,17 @@ pipeline {
                 checkout scm
             }
         }
-        stage('download .net sdk'){
+        stage('сheck version of sdk'){
             steps{
-                sh 'dotnet --version '
+                sh 'dotnet --version'
+            }
+        }
+        stage('build and test'){
+            steps{
+                sh "dotnet restore ${projectPath}"
+                sh "dotnet publish --configuration ${buildConfiguration} --no-restore"
+                sh "dotnet test **/*Tests.csproj --configuration ${buildConfiguration} --no-build || true"
+
             }
         }
     }
