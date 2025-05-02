@@ -48,7 +48,8 @@ stage('Build and Push Docker') {
         /usr/local/bin/docker build \
           -t ${dockerHubUsername}/${dockerImageName}:${BUILD_ID} \
           -t ${dockerHubUsername}/${dockerImageName}:latest .
-
+          
+        export DOCKER_CONFIG=$(mktemp -d)
         echo "$DOCKER_PASS" | /usr/local/bin/docker login \
           -u "$DOCKER_USER" --password-stdin
 
