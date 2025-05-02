@@ -81,7 +81,7 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                dir('ASPNETCore-WebAPI-Sample/terraform') {
+                dir('terraform') {
                     sh '/opt/homebrew/bin/terraform init'
                 }
             }
@@ -89,7 +89,7 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                dir('ASPNETCore-WebAPI-Sample/terraform') {
+                dir('terraform') {
                     sh '/opt/homebrew/bin/terraform plan'
                 }
             }
@@ -98,11 +98,12 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 input message: "Do you want to apply Terraform changes?"
-                dir('ASPNETCore-WebAPI-Sample/terraform') {
+                dir('terraform') {
                     sh '/opt/homebrew/bin/terraform apply -auto-approve'
                 }
             }
         }
+
 
     }
 }
