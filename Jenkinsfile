@@ -3,6 +3,10 @@ pipeline {
     triggers {
         githubPush()
     }
+    tools {
+        dotnetsdk 'dotnet'
+    }
+
     stages {
         stage('checkout scm'){
             steps {
@@ -11,10 +15,7 @@ pipeline {
         }
         stage('download .net sdk'){
             steps{
-                sh 'dotnet --list-sdks || true'
-                sh 'wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh'
-                sh 'chmod +x dotnet-install.sh'
-                sh './dotnet-install.sh --version 7.0.100'
+                sh 'dotnet --version '
             }
         }
     }
