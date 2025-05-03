@@ -37,7 +37,7 @@ pipeline {
         stage('Build and Test') {
             steps {
                 sh "dotnet restore ${projectPath}"
-                sh "dotnet build   ${projectPath} --configuration ${buildConfiguration} --no-restore"
+                sh "dotnet build ${projectPath} --configuration ${buildConfiguration} --no-restore"
                 sh "dotnet test **/*Tests.csproj --configuration ${buildConfiguration} --no-build || true"
             }
         }
@@ -49,7 +49,7 @@ pipeline {
                 usernameVariable: 'DOCKER_USER',
                 passwordVariable: 'DOCKER_PASS'
                 )]) {
-                sh '''
+                    sh '''
                     /usr/local/bin/docker build \
                     -t ${dockerHubUsername}/${dockerImageName}:${BUILD_ID} \
                     -t ${dockerHubUsername}/${dockerImageName}:latest .
@@ -63,7 +63,7 @@ pipeline {
 
                     /usr/local/bin/docker push \
                     ${dockerHubUsername}/${dockerImageName}:latest
-                '''
+                    '''
                 }
             }
         }
@@ -71,10 +71,10 @@ pipeline {
         stage('Login to Azure') {
             steps {
                 sh '''
-                    echo $ARM_CLIENT_SECRET | /opt/homebrew/bin/az login --service-principal \
-                      --username $ARM_CLIENT_ID \
-                      --password $(< /dev/stdin) \
-                      --tenant $ARM_TENANT_ID
+                echo $ARM_CLIENT_SECRET | /opt/homebrew/bin/az login --service-principal \
+                --username $ARM_CLIENT_ID \
+                --password $(< /dev/stdin) \
+                --tenant $ARM_TENANT_ID
                 '''
             }
         }
@@ -87,7 +87,18 @@ pipeline {
             }
         }
 
-        stage('Terraform Plan') {
+        stage('Terraform Validate') {
+            steps {
+                dir('terraform') {
+                    sh '/opt/homebrew/bin/terraform validate'
+                }
+            }
+        }
+
+        stage('Terraform Plan (for PR)') {
+            when {
+                branch 'PR-*'  
+            }
             steps {
                 withCredentials([file(credentialsId: 'tfvars-file', variable: 'TFVARS_FILE')]) {
                     dir('terraform') {
@@ -97,7 +108,10 @@ pipeline {
             }
         }
 
-        stage('Terraform Apply') {
+        stage('Terraform Apply (for main)') {
+            when {
+                branch 'main'  
+            }
             steps {
                 input message: "Do you want to apply Terraform changes?"
                 withCredentials([file(credentialsId: 'tfvars-file', variable: 'TFVARS_FILE')]) {
@@ -108,7 +122,14 @@ pipeline {
             }
         }
 
+    }
 
-
+    post {
+        success {
+            echo "Pipeline completed successfully"
+        }
+        failure {
+            echo "Pipeline failed"
+        }
     }
 }
