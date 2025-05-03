@@ -110,9 +110,9 @@ pipeline {
 
         stage('Terraform Apply (for main)') {
             when {
-                anyOf{
-                    branch 'main' 
-                } 
+            expression {
+                return env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main'
+            }
             }
             steps {
                 input message: "Do you want to apply Terraform changes?"
