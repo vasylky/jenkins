@@ -50,9 +50,14 @@ pipeline {
                 passwordVariable: 'DOCKER_PASS'
                 )]) {
                 sh '''
-                    /usr/local/bin/docker build \
-                    -t ${dockerHubUsername}/${dockerImageName}:${BUILD_ID} \
-                    -t ${dockerHubUsername}/${dockerImageName}:latest .
+                    /usr/local/bin/docker buildx create --use || true
+
+                    /usr/local/bin/docker buildx build \
+                        --platform linux/amd64 \
+                        -t ${dockerHubUsername}/${dockerImageName}:${BUILD_ID} \
+                        -t ${dockerHubUsername}/${dockerImageName}:latest \
+                        --push .
+
                     
                     export DOCKER_CONFIG=$(mktemp -d)
                     echo "$DOCKER_PASS" | /usr/local/bin/docker login \
