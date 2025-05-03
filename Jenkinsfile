@@ -110,7 +110,7 @@ pipeline {
 
         stage('Terraform Apply (for main)') {
             when {
-                anyof{
+                anyOf{
                     branch 'main' 
                 } 
             }
