@@ -81,3 +81,10 @@ resource "azurerm_subnet" "subnet3" {
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.4.0/24"]
 }
+
+resource "azurerm_subnet" "subnet4" {
+  name                 = "subnet-example4"
+  resource_group_name  = azurerm_resource_group.main.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.5.0/24"]
+}
