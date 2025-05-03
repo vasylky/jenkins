@@ -110,7 +110,9 @@ pipeline {
 
         stage('Terraform Apply (for main)') {
             when {
-                branch 'main'  
+                anyof{
+                    branch 'main' 
+                } 
             }
             steps {
                 input message: "Do you want to apply Terraform changes?"
