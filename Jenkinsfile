@@ -50,22 +50,9 @@ pipeline {
                 passwordVariable: 'DOCKER_PASS'
                 )]) {
                 sh '''
-                    export DOCKER_CONFIG=$(mktemp -d)
-
-                        mkdir -p $DOCKER_CONFIG
-                        echo '{ "credsStore": "" }' > $DOCKER_CONFIG/config.json
-
-                        echo "$DOCKER_PASS" | /usr/local/bin/docker login \
-                            -u "$DOCKER_USER" --password-stdin
-
-                        /usr/local/bin/docker buildx create --use || true
-
-                        /usr/local/bin/docker buildx build \
-                            --platform linux/amd64 \
-                            -t ${dockerHubUsername}/${dockerImageName}:${BUILD_ID} \
-                            -t ${dockerHubUsername}/${dockerImageName}:latest \
-                            --push .
-
+                    /usr/local/bin/docker build \
+                    -t ${dockerHubUsername}/${dockerImageName}:${BUILD_ID} \
+                    -t ${dockerHubUsername}/${dockerImageName}:latest .
                     
                     export DOCKER_CONFIG=$(mktemp -d)
                     echo "$DOCKER_PASS" | /usr/local/bin/docker login \
