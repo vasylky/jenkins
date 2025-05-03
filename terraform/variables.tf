@@ -19,7 +19,7 @@ variable "dockerhub_password" {
   sensitive   = true
 }
 variable "docker_image" {
-  default = "samplewebapiaspnetcore-webapi:latest"
+  default = "aspnetapp:latest"
 }
 
 variable "subscription_id" {
