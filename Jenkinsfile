@@ -3,11 +3,8 @@ pipeline {
 
     triggers {
         githubPush()
-        pullRequest {
-            cron('H/5 * * * *')
-            orgWhitelist(['*'])
-            useGitHubHooks(true)
-        }
+        pollSCM('H/5 * * * *')
+
     }
     
     environment {
