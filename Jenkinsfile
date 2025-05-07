@@ -96,9 +96,11 @@ pipeline {
         }
 
         stage('Terraform Plan (for PR)') {
+            
             when {
-                branch 'PR-*'  
+                changeRequest()
             }
+            
             steps {
                 withCredentials([file(credentialsId: 'tfvars-file', variable: 'TFVARS_FILE')]) {
                     dir('terraform') {
