@@ -1,14 +1,15 @@
 pipeline {
     agent any
 
-triggers {
-    githubPush()
-    githubPullRequest {
-        useGitHubHooks(true)
+    triggers {
+        githubPush()
+        pullRequest {
+            cron('H/5 * * * *')
+            orgWhitelist(['*'])
+            useGitHubHooks(true)
+        }
     }
-}
     
-
     environment {
         buildConfiguration = 'Release'
         projectPath         = 'SampleWebApiAspNetCore/SampleWebApiAspNetCore.csproj'
@@ -100,7 +101,6 @@ triggers {
         }
 
         stage('Terraform Plan (for PR)') {
-            
             when {
                 changeRequest()
             }
@@ -108,7 +108,7 @@ triggers {
             steps {
                 withCredentials([file(credentialsId: 'tfvars-file', variable: 'TFVARS_FILE')]) {
                     dir('terraform') {
-                        sh "/opt/homebrew/bin/terraform plan -var-file=$TFVARS_FILE"
+                        sh "/opt/homebrew/bin/terraform plan -var-file=\"${TFVARS_FILE}\""
                     }
                 }
             }
@@ -116,20 +116,19 @@ triggers {
 
         stage('Terraform Apply (for main)') {
             when {
-            expression {
-                return env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main'
-            }
+                expression {
+                    return env.BRANCH_NAME == 'main' || env.GIT_BRANCH == 'origin/main'
+                }
             }
             steps {
                 input message: "Do you want to apply Terraform changes?"
                 withCredentials([file(credentialsId: 'tfvars-file', variable: 'TFVARS_FILE')]) {
                     dir('terraform') {
-                        sh "/opt/homebrew/bin/terraform apply -var-file=$TFVARS_FILE -auto-approve"
+                        sh "/opt/homebrew/bin/terraform apply -var-file=\"${TFVARS_FILE}\" -auto-approve"
                     }
                 }
             }
         }
-
     }
 
     post {
