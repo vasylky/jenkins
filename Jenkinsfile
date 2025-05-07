@@ -1,12 +1,13 @@
 pipeline {
     agent any
 
-    triggers {
-        githubPush()    
-        githubPullRequest {
-            useGitHubHooks(true)}
+triggers {
+    githubPush()
+    githubPullRequest {
+        useGitHubHooks(true)
     }
-    }
+}
+    
 
     environment {
         buildConfiguration = 'Release'
