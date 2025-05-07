@@ -25,3 +25,8 @@ variable "docker_image" {
 variable "subscription_id" {
     description = "subscription of azure account"
 }
+
+variable "environment" {
+  default = "dev"
+  
+}

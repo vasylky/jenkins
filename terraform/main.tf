@@ -20,6 +20,32 @@ resource "azurerm_resource_group" "main" {
   location = var.location
 }
 
+resource "azurerm_application_insights" "main" {
+  name                = "appi-${var.app_name}"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  application_type    = "web"
+  workspace_id        = azurerm_log_analytics_workspace.main.id
+  
+  retention_in_days   = 90
+  
+  tags = {
+    environment = var.environment
+  }
+}
+
+resource "azurerm_log_analytics_workspace" "main" {
+  name                = "law-${var.app_name}"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+  
+  tags = {
+    environment = var.environment
+  }
+}
+
 resource "azurerm_service_plan" "main" {
   name                = "asp-${var.app_name}"
   location            = azurerm_resource_group.main.location
