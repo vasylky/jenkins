@@ -2,7 +2,10 @@ pipeline {
     agent any
 
     triggers {
-        githubPush()
+        githubPush()    
+        githubPullRequest {
+            useGitHubHooks(true)}
+    }
     }
 
     environment {
